@@ -33,6 +33,7 @@ public class UserController {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         UserDto userDto = userService.getUserByEmail(email);
         return ResponseEntity.ok(userDto);
+
     }
 
     @GetMapping

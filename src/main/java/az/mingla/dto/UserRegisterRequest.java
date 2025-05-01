@@ -15,7 +15,7 @@ public class UserRegisterRequest {
     @NotBlank(message = "Surname can not be blank")
     private String surname;
 
-    @JsonFormat(pattern = "dd-MM-yyyy") // burda dd-gun, MM-ay, yyyy-ildir.
+    @JsonFormat(pattern = "dd-MM-yyyy")
     private LocalDate birthdate;
 
     @NotNull(message = "Phone number can not be null")

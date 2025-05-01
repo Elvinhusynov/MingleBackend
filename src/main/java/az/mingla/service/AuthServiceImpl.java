@@ -4,7 +4,7 @@ import az.mingla.dto.*;
 import az.mingla.entity.User;
 import az.mingla.exception.UserAlreadyExistsException;
 import az.mingla.repository.UserRepository;
-import az.mingla.security.JwtUtil;
+import az.mingla.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;

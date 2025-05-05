@@ -44,6 +44,8 @@ public class User {
 
     private boolean enabled;
 
+    private LocalDateTime modifiedAt;
+
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
 

@@ -1,22 +1,28 @@
 package az.mingla.service;
 
 import az.mingla.dto.UserDto;
+import az.mingla.dto.UserUpdateRequest;
 import az.mingla.entity.User;
 import az.mingla.exception.UserNotFoundException;
 import az.mingla.mapper.UserMapper;
 import az.mingla.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService , UserDetailsService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -44,31 +50,10 @@ public class UserServiceImpl implements UserService , UserDetailsService {
     }
 
     @Override
-    public UserDto updateUser(Long id, UserDto userDto) {
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
-
-        existingUser.setName(userDto.getName());
-        existingUser.setSurname(userDto.getSurname());
-        existingUser.setEmail(userDto.getEmail());
-        existingUser.setUsername(userDto.getUsername());
-        existingUser.setBio(userDto.getBio());
-        existingUser.setProfileImage(userDto.getProfileImage());
-        existingUser.setLocked(userDto.isLocked());
-        existingUser.setEnabled(userDto.isEnabled());
-        existingUser.setLastLogin(userDto.getLastLogin());
-        existingUser.setBirthDate(userDto.getBirthDate());
-
-        User updatedUser = userRepository.save(existingUser);
-        return userMapper.toDto(updatedUser);
-    }
-
-    @Override
     public void deleteUser(Long id) {
-        if (!userRepository.existsById(id)) {
-            throw new UserNotFoundException("User not found with id: " + id);
-        }
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("İstifadəçi tapılmadı"));
+        userRepository.delete(user);
     }
 
     @Override
@@ -81,5 +66,53 @@ public class UserServiceImpl implements UserService , UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         return null;
+    }
+
+    @Override
+    public UserDto getCurrentUser() {
+        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
+
+        User user = userRepository.findByUsername(currentUsername)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + currentUsername));
+
+        return userMapper.toPublicDto(user);
+    }
+
+    @Override
+    public Page<User> searchUsers(String name, String surname, String username, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepository.search(name, surname, username, pageable);
+    }
+
+    @Override
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("İstifadəçi tapılmadı: " + username));
+    }
+
+    @Override
+    public Long getUserIdByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("İstifadəçi tapılmadı"))
+                .getUserId();
+    }
+
+    @Override
+    public UserDto updateUser(Long id, UserUpdateRequest request) {
+        User user = userRepository.findById(id)
+               .orElseThrow(() -> new RuntimeException("İstifadəçi tapılmadı"));
+
+        user.setName(request.getName());
+        user.setSurname(request.getSurname());
+        user.setModifiedAt(LocalDateTime.now());
+        userRepository.save(user);
+
+        return userMapper.toDto(user);
+    }
+
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("İstifadəçi tapılmadı"));
     }
 }

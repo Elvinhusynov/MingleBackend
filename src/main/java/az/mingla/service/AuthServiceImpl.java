@@ -23,6 +23,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse register(UserRegisterRequest request) {
+
         if (userRepository.findByEmail(request.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("Email already exists");
         }

@@ -15,7 +15,7 @@ public class UserResponse {
     private String email;
     private String username;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss") //HH-saat,mm-dəqiqə,ss-saniyə
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDate createdDate;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")

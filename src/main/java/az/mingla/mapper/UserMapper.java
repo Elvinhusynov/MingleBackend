@@ -21,6 +21,20 @@ public interface UserMapper {
     @Mapping(target = "lastLogin", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
-
     User toEntity(UserRegisterRequest request);
+
+    default UserDto toPublicDto(User user) {
+        if (user == null) {
+            return null;
+        }
+        UserDto dto = new UserDto();
+        dto.setId(user.getUserId());
+        dto.setName(user.getName());
+        dto.setSurname(user.getSurname());
+        dto.setUsername(user.getUsername());
+        return dto;
+    }
 }
+
+
+

@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Component
 public class JwtUtil {
-    private static final String SECRET_KEY = "mysecretkeymysecretkeymysecretkeymysecretkey"; // min 256 bit
+    private static final String SECRET_KEY = "mysecretkeymysecretkeymysecretkeymysecretkey";
 
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
@@ -28,11 +28,11 @@ public class JwtUtil {
 
     public String extractUsername(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)  // 'key' token-in imzalanması üçün istifadə olunur
+                .setSigningKey(key)
                 .build()
-                .parseClaimsJws(token)  // Token-i analiz edir
-                .getBody()  // Token-in body hissəsini alır
-                .getSubject();  // 'subject' (yəni username) qaytarılır
+                .parseClaimsJws(token)
+                .getBody()
+                .getSubject();
     }
 
     public boolean isTokenValid(String token, UserDetails userDetails) {
@@ -41,7 +41,7 @@ public class JwtUtil {
     }
 
     public boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());   // Token-in bitiş vaxtı yoxlanır
+        return extractExpiration(token).before(new Date());
     }
 
     public Date extractExpiration(String token) {
@@ -50,10 +50,10 @@ public class JwtUtil {
 
     private Claims parseClaims(String token) {
         return Jwts.parserBuilder()
-                .setSigningKey(key)  // 'key' token-in imzalanması üçün istifadə olunur
+                .setSigningKey(key)
                 .build()
-                .parseClaimsJws(token)  // Token-i analiz edir
-                .getBody();  // Token-in body hissəsini qaytarır
+                .parseClaimsJws(token)
+                .getBody();
     }
 }
 

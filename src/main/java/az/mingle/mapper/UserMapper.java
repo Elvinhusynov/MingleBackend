@@ -21,6 +21,7 @@ public interface UserMapper {
     @Mapping(target = "lastLogin", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
+    @Mapping(target = "phoneNumber", source = "phoneNumber")
     User toEntity(UserRegisterRequest request);
 
     default UserDto toPublicDto(User user) {

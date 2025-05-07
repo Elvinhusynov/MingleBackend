@@ -3,6 +3,7 @@ package az.mingle.service;
 import az.mingle.dto.*;
 import az.mingle.entity.User;
 import az.mingle.exception.UserAlreadyExistsException;
+import az.mingle.mapper.UserMapper;
 import az.mingle.repository.UserRepository;
 import az.mingle.util.JwtUtil;
 
@@ -20,6 +21,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
+    private final UserMapper userMapper;
 
     @Override
     public AuthResponse register(UserRegisterRequest request) {
@@ -36,15 +38,9 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("Password must be at least 8 characters");
         }
 
-        User user = User.builder()
-                .name(request.getName())
-                .surname(request.getSurname())
-                .email(request.getEmail())
-                .username(request.getUsername())
-                .password(passwordEncoder.encode(request.getPassword()))
-                .enabled(true)
-                .locked(false)
-                .build();
+        // Mapper vasitəsilə mapping
+        User user = userMapper.toEntity(request);
+        user.setPassword(passwordEncoder.encode(request.getPassword())); // Şifrəni hashlə
 
         userRepository.save(user);
 

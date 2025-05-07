@@ -69,7 +69,7 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
-    @GetMapping("/me")
+    @GetMapping("/my-profile")
     public ResponseEntity<UserDto> getMyProfile(Authentication authentication) {
         String username = authentication.getName();
         User user = userService.findByUsername(username);
@@ -99,6 +99,12 @@ public class UserController {
         }
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<User> getAuthenticatedUser() {
+        User user = userService.getAuthenticatedUser();
+        return ResponseEntity.ok(user);
     }
 }
 

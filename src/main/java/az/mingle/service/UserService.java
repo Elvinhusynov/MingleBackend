@@ -31,6 +31,8 @@ public interface UserService {
 
     Page<User> searchUsers(String name, String surname, String username, int page, int size);
 
+    User getAuthenticatedUser();
+
 
 
 

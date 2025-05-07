@@ -34,7 +34,7 @@ public class User {
     @Column(columnDefinition = "TEXT")
     private String bio;
 
-    @Column(nullable = false, unique = true, length = 10)
+    @Column(name = "phone_number", nullable = false, unique = true, length = 10)
     private String phoneNumber;
 
     @Column(name = "profile_image")
@@ -50,7 +50,7 @@ public class User {
     private LocalDateTime lastLogin;
 
     @Column(name = "birth_date")
-    private LocalDate birthDate;
+    private LocalDate birthdate;
 
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;

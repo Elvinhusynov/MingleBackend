@@ -22,6 +22,4 @@ public interface UserRepository extends JpaRepository<User, Long>  {
                       @Param("surname") String surname,
                       @Param("username") String username,
                       Pageable pageable);
-
-
 }

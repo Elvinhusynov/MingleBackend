@@ -22,6 +22,7 @@ public interface UserMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "phoneNumber", source = "phoneNumber")
+
     User toEntity(UserRegisterRequest request);
 
     default UserDto toPublicDto(User user) {
@@ -33,6 +34,7 @@ public interface UserMapper {
         dto.setName(user.getName());
         dto.setSurname(user.getSurname());
         dto.setUsername(user.getUsername());
+        dto.setProfileImage(user.getProfileImage());
         return dto;
     }
 }

@@ -2,6 +2,7 @@ package az.mingle.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -31,8 +32,8 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @Column(columnDefinition = "TEXT")
-    private String bio;
+    @Column(nullable = false)
+    private String bio = "";
 
     @Column(name = "phone_number", nullable = false, unique = true, length = 10)
     private String phoneNumber;

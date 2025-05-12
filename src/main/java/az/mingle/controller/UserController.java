@@ -13,6 +13,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import az.mingle.exception.AccessDeniedException;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -106,5 +107,20 @@ public class UserController {
         User user = userService.getAuthenticatedUser();
         return ResponseEntity.ok(user);
     }
+
+    @PostMapping("/{id}/upload-profile-image")
+    public ResponseEntity<String> uploadProfileImage(@PathVariable Long id,
+                                                     @RequestParam("image") MultipartFile file) {
+        userService.uploadProfileImage(id, file);
+        return ResponseEntity.ok("Profil şəkliniz yükləndi.");
+    }
+
+    @DeleteMapping("/{id}/profile-image")
+    public ResponseEntity<String> deleteProfileImage(@PathVariable Long id) {
+        userService.deleteProfileImage(id);
+        return ResponseEntity.ok("Profil şəkliniz silindi. ");
+    }
+
+
 }
 

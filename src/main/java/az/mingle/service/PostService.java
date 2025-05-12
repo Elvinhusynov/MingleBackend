@@ -5,6 +5,9 @@ import az.mingle.entity.User;
 import az.mingle.repository.PostRepository;
 import az.mingle.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -52,4 +55,5 @@ public class PostService {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         return postRepository.findByUser(user);
     }
+
 }

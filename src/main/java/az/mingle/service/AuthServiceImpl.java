@@ -13,6 +13,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 @RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
@@ -38,9 +40,8 @@ public class AuthServiceImpl implements AuthService {
             throw new IllegalArgumentException("Password must be at least 8 characters");
         }
 
-        // Mapper vasitəsilə mapping
         User user = userMapper.toEntity(request);
-        user.setPassword(passwordEncoder.encode(request.getPassword())); // Şifrəni hashlə
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         userRepository.save(user);
 
@@ -62,8 +63,14 @@ public class AuthServiceImpl implements AuthService {
                 )
         );
 
+
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
+
+
+        user.setLastLogin(LocalDateTime.now());
+        userRepository.save(user);
+
 
         String token = jwtUtil.generateToken(user.getUsername());
 

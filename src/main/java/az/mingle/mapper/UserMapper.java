@@ -39,7 +39,6 @@ public interface UserMapper {
         dto.setLastLogin(user.getLastLogin());
         return dto;
     }
-
 }
 
 

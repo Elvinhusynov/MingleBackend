@@ -1,11 +1,13 @@
 package az.mingle.controller;
 
 import az.mingle.dto.UserDto;
+import az.mingle.dto.UserRegisterRequest;
 import az.mingle.dto.UserUpdateRequest;
 import az.mingle.entity.User;
 import az.mingle.mapper.UserMapper;
 import az.mingle.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -28,8 +30,9 @@ public class UserController {
 
 
     @PostMapping
-    public ResponseEntity<UserDto> createUser(@RequestBody UserDto userDto) {
-        return ResponseEntity.ok(userService.createUser(userDto));
+    public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserRegisterRequest request) {
+        UserDto savedUser = userService.createUser(request);
+        return ResponseEntity.ok(savedUser);
     }
 
     @GetMapping("/{id}")

@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
+@Table(name = "posts")
 public class Post {
 
     @Id
@@ -14,13 +15,24 @@ public class Post {
     private Long id;
 
     private String title;
+
     private String content;
 
-    @ManyToOne
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    private LocalDateTime updatedAt;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+    }
 
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 }

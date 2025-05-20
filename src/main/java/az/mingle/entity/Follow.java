@@ -26,6 +26,6 @@ public class Follow {
     @JoinColumn(name = "followed_id", nullable = false)
     private User followed;
 
-    private LocalDateTime followedAt = LocalDateTime.now();
+    private LocalDateTime createdAt = LocalDateTime.now();
 }
 

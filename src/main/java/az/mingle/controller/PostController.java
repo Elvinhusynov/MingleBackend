@@ -1,8 +1,11 @@
 package az.mingle.controller;
 
-import az.mingle.entity.Post;
+import az.mingle.dto.BaseResponse;
+import az.mingle.dto.PostRequest;
+import az.mingle.dto.PostResponse;
 import az.mingle.service.PostService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,41 +14,56 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/posts")
+@RequiredArgsConstructor
 public class PostController {
 
-    @Autowired
-    private PostService postService;
+    private final PostService postService;
 
     @PostMapping
-    public ResponseEntity<Post> createPost(@RequestBody Post post, @RequestParam Long userId) {
-        Post createdPost = postService.createPost(post, userId);
-        return new ResponseEntity<>(createdPost, HttpStatus.CREATED);
+    public ResponseEntity<BaseResponse<PostResponse>> createPost(
+            @RequestBody @Valid PostRequest postRequest,
+            @RequestParam Long userId) {
+
+        PostResponse createdPost = postService.createPost(postRequest, userId);
+        return new ResponseEntity<>(
+                new BaseResponse<>(true, "Post created successfully", createdPost),
+                HttpStatus.CREATED
+        );
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Post> updatePost(@PathVariable Long id, @RequestBody Post post, @RequestParam Long userId) {
-        Post updatedPost = postService.updatePost(id, post, userId);
-        return ResponseEntity.ok(updatedPost);
-    }
+    public ResponseEntity<BaseResponse<PostResponse>> updatePost(
+            @PathVariable Long id,
+            @RequestBody @Valid PostRequest postRequest,
+            @RequestParam Long userId) {
 
+        PostResponse updatedPost = postService.updatePost(id, postRequest, userId);
+        return ResponseEntity.ok(
+                new BaseResponse<>(true, "Post updated successfully", updatedPost)
+        );
+    }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePost(@PathVariable Long id, @RequestParam Long userId) {
+    public ResponseEntity<BaseResponse<Void>> deletePost(@PathVariable Long id, @RequestParam Long userId) {
         postService.deletePost(id, userId);
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(
+                new BaseResponse<>(true, "Post deleted successfully", null)
+        );
     }
-
 
     @GetMapping
-    public ResponseEntity<List<Post>> getAllPosts() {
-        List<Post> posts = postService.getAllPosts();
-        return ResponseEntity.ok(posts);
+    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts() {
+        List<PostResponse> posts = postService.getAllPosts();
+        return ResponseEntity.ok(
+                new BaseResponse<>(true, "All posts retrieved successfully", posts)
+        );
     }
 
-
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<Post>> getUserPosts(@PathVariable Long userId) {
-        List<Post> posts = postService.getUserPosts(userId);
-        return ResponseEntity.ok(posts);
+    public ResponseEntity<BaseResponse<List<PostResponse>>> getUserPosts(@PathVariable Long userId) {
+        List<PostResponse> posts = postService.getUserPosts(userId);
+        return ResponseEntity.ok(
+                new BaseResponse<>(true, "User posts retrieved successfully", posts)
+        );
     }
 }

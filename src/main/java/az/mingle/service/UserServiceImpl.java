@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService , UserDetailsService {
     @Override
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("İstifadəçi tapılmadı"));
+                .orElseThrow(() -> new ResourceNotFoundException("İstifadəçi tapılmadı"));
         userRepository.delete(user);
     }
 
@@ -167,7 +167,7 @@ public class UserServiceImpl implements UserService , UserDetailsService {
             user.setProfileImage("/uploads/profile_images/" + fileName);
             userRepository.save(user);
         } catch (IOException e) {
-            throw new RuntimeException("Fayl yüklənərkən xəta baş verdi", e);
+            throw new RuntimeException("Şəkil yüklənərkən xəta baş verdi. ", e);
         }
     }
 
@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService , UserDetailsService {
             try {
                 Files.deleteIfExists(filePath);
             } catch (IOException e) {
-                throw new RuntimeException("Şəkli silmək mümkün olmadı", e);
+                throw new RuntimeException("Şəkili silmək mümkün olmadı. ", e);
             }
 
             user.setProfileImage(null);

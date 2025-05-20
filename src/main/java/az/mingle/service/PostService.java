@@ -1,59 +1,20 @@
 package az.mingle.service;
 
-import az.mingle.entity.Post;
-import az.mingle.entity.User;
-import az.mingle.repository.PostRepository;
-import az.mingle.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.stereotype.Service;
+import az.mingle.dto.PostRequest;
+import az.mingle.dto.PostResponse;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
-@Service
-public class PostService {
-    @Autowired
-    private PostRepository postRepository;
+public interface PostService {
 
-    @Autowired
-    private UserRepository userRepository;
+    PostResponse createPost(PostRequest postRequest, Long userId);
 
-    public Post createPost(Post post, Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        post.setUser(user);
-        post.setCreatedAt(LocalDateTime.now());
-        return postRepository.save(post);
-    }
+    PostResponse updatePost(Long postId, PostRequest postRequest, Long userId);
 
-    public Post updatePost(Long postId, Post postDetails, Long userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
-        if (!post.getUser().getUserId().equals(userId)) {
-            throw new RuntimeException("You can only update your own posts");
-        }
-        post.setTitle(postDetails.getTitle());
-        post.setContent(postDetails.getContent());
-        post.setUpdatedAt(LocalDateTime.now());
-        return postRepository.save(post);
-    }
+    void deletePost(Long postId, Long userId);
 
-    public void deletePost(Long postId, Long userId) {
-        Post post = postRepository.findById(postId).orElseThrow(() -> new RuntimeException("Post not found"));
-        if (!post.getUser().getUserId().equals(userId)) {
-            throw new RuntimeException("You can only delete your own posts");
-        }
-        postRepository.delete(post);
-    }
+    List<PostResponse> getAllPosts();
 
-    public List<Post> getAllPosts() {
-        return postRepository.findAll();
-    }
-
-    public List<Post> getUserPosts(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-        return postRepository.findByUser(user);
-    }
-
+    List<PostResponse> getUserPosts(Long userId);
 }
+

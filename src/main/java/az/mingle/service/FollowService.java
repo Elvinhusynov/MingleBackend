@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface FollowService {
 
-    void followUser(Long followerId, Long followedId);
+    void follow(Long followerId, Long followedId);
 
-    void unfollowUser(Long followerId, Long followedId);
+    void unfollow(Long followerId, Long followedId);
 
     List<UserDto> getFollowers(Long userId);
 

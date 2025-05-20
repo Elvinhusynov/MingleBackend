@@ -1,5 +1,6 @@
 package az.mingle.controller;
 
+import az.mingle.dto.BaseResponse;
 import az.mingle.dto.UserDto;
 import az.mingle.service.FollowService;
 import lombok.RequiredArgsConstructor;
@@ -15,25 +16,30 @@ public class FollowController {
 
     private final FollowService followService;
 
-    @PostMapping("/{followerId}/follow/{followedId}")
-    public ResponseEntity<Void> follow(@PathVariable Long followerId, @PathVariable Long followedId) {
-        followService.followUser(followerId, followedId);
-        return ResponseEntity.ok().build();
+    @PostMapping("/{followerId}/follow/{followingId}")
+    public ResponseEntity<BaseResponse<Void>> follow(@PathVariable Long followerId,
+                                                     @PathVariable Long followingId) {
+        followService.follow(followerId, followingId);
+        return ResponseEntity.ok(new BaseResponse<>(true, "Followed successfully", null));
     }
 
-    @DeleteMapping("/{followerId}/unfollow/{followedId}")
-    public ResponseEntity<Void> unfollow(@PathVariable Long followerId, @PathVariable Long followedId) {
-        followService.unfollowUser(followerId, followedId);
-        return ResponseEntity.ok().build();
+    @DeleteMapping("/{followerId}/unfollow/{followingId}")
+    public ResponseEntity<BaseResponse<Void>> unfollow(@PathVariable Long followerId,
+                                                       @PathVariable Long followingId) {
+        followService.unfollow(followerId, followingId);
+        return ResponseEntity.ok(new BaseResponse<>(true, "Unfollowed successfully", null));
     }
 
     @GetMapping("/{userId}/followers")
-    public ResponseEntity<List<UserDto>> getFollowers(@PathVariable Long userId) {
-        return ResponseEntity.ok(followService.getFollowers(userId));
+    public ResponseEntity<BaseResponse<List<UserDto>>> getFollowers(@PathVariable Long userId) {
+        List<UserDto> followers = followService.getFollowers(userId);
+        return ResponseEntity.ok(new BaseResponse<>(true, "Followers retrieved successfully", followers));
     }
 
     @GetMapping("/{userId}/following")
-    public ResponseEntity<List<UserDto>> getFollowing(@PathVariable Long userId) {
-        return ResponseEntity.ok(followService.getFollowing(userId));
+    public ResponseEntity<BaseResponse<List<UserDto>>> getFollowing(@PathVariable Long userId) {
+        List<UserDto> following = followService.getFollowing(userId);
+        return ResponseEntity.ok(new BaseResponse<>(true, "Following retrieved successfully", following));
     }
 }
+

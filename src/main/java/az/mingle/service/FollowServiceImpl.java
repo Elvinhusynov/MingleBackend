@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import az.mingle.repository.UserRepository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,45 +23,40 @@ public class FollowServiceImpl implements FollowService {
     private final UserMapper userMapper;
 
     @Override
-    public void followUser(Long followerId, Long followedId) {
+    public void follow(Long followerId, Long followedId) {
         if (followerId.equals(followedId)) {
-            throw new IllegalArgumentException("Özünü follow etmək olmaz");
+            throw new IllegalArgumentException("You cannot follow yourself");
         }
 
         User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new NotFoundException("Follower tapılmadı"));
-        User followed = userRepository.findById(followedId)
-                .orElseThrow(() -> new NotFoundException("Followed tapılmadı"));
+                .orElseThrow(() -> new NotFoundException("Follower user not found"));
 
-        if (followRepository.findByFollowerAndFollowed(follower, followed).isPresent()) {
-            throw new IllegalStateException("Artıq follow olunub");
+        User followed = userRepository.findById(followedId)
+                .orElseThrow(() -> new NotFoundException("Followed user not found"));
+
+        if (followRepository.findByFollowerIdAndFollowedId(followerId, followedId).isPresent()) {
+            throw new IllegalStateException("Already following this user");
         }
 
         Follow follow = new Follow();
         follow.setFollower(follower);
         follow.setFollowed(followed);
+        follow.setCreatedAt(LocalDateTime.now());
+
         followRepository.save(follow);
     }
 
     @Override
-    public void unfollowUser(Long followerId, Long followedId) {
-        User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new NotFoundException("Follower tapılmadı"));
-        User followed = userRepository.findById(followedId)
-                .orElseThrow(() -> new NotFoundException("Followed tapılmadı"));
-
-        Follow follow = followRepository.findByFollowerAndFollowed(follower, followed)
-                .orElseThrow(() -> new NotFoundException("Follow əlaqəsi tapılmadı"));
+    public void unfollow(Long followerId, Long followedId) {
+        Follow follow = followRepository.findByFollowerIdAndFollowedId(followerId, followedId)
+                .orElseThrow(() -> new NotFoundException("Follow relationship not found"));
 
         followRepository.delete(follow);
     }
 
     @Override
     public List<UserDto> getFollowers(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User tapılmadı"));
-
-        return followRepository.findByFollowed(user)
+        return followRepository.findByFollowedId(userId)
                 .stream()
                 .map(f -> userMapper.toDto(f.getFollower()))
                 .collect(Collectors.toList());
@@ -68,10 +64,7 @@ public class FollowServiceImpl implements FollowService {
 
     @Override
     public List<UserDto> getFollowing(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User tapılmadı"));
-
-        return followRepository.findByFollower(user)
+        return followRepository.findByFollowerId(userId)
                 .stream()
                 .map(f -> userMapper.toDto(f.getFollowed()))
                 .collect(Collectors.toList());

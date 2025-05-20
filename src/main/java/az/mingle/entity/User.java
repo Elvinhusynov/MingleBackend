@@ -2,9 +2,13 @@ package az.mingle.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
 
 @Entity
 @Table(name = "users")
@@ -12,7 +16,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User implements UserDetails {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long userId;
@@ -68,5 +73,31 @@ public class User {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    // 👇 Bunlar `UserDetails` interface-indən gələn metodlardır:
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList(); // Hal-hazırda rol sistemi yoxdur
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true; // Hesab müddəti bitməyib
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return !locked; // Əgər `locked` true-dursa, bloklanıb
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true; // Şifrə müddəti bitməyib
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return enabled; // İstifadəçi aktivdirsə true qaytar
     }
 }

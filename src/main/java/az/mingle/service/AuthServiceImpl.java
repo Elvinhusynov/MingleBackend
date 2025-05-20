@@ -36,10 +36,6 @@ public class AuthServiceImpl implements AuthService {
             throw new UserAlreadyExistsException("Username already exists");
         }
 
-        if (request.getPassword().length() < 8) {
-            throw new IllegalArgumentException("Password must be at least 8 characters");
-        }
-
         User user = userMapper.toEntity(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
@@ -52,9 +48,6 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     public AuthResponse login(LoginRequest request) {
-        if (request.getPassword().length() < 8) {
-            throw new IllegalArgumentException("Password must be at least 8 characters");
-        }
 
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(

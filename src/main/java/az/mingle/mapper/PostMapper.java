@@ -5,6 +5,7 @@ import az.mingle.dto.PostResponse;
 import az.mingle.entity.Post;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
@@ -20,4 +21,9 @@ public interface PostMapper {
     @Mapping(source = "user.userId", target = "userId")
     @Mapping(source = "user.username", target = "username")
     PostResponse toDto(Post post);
+
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "user", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    void updatePostFromRequest(PostRequest postRequest, @MappingTarget Post post);
 }

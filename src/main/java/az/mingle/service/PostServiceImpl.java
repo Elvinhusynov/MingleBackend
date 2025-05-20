@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class PostServiceImpl implements PostService  {
+public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
@@ -44,8 +44,8 @@ public class PostServiceImpl implements PostService  {
             throw new RuntimeException("You can only update your own posts");
         }
 
-        post.setTitle(postRequest.getTitle());
-        post.setContent(postRequest.getContent());
+        postMapper.updatePostFromRequest(postRequest, post);
+
         post.setUpdatedAt(LocalDateTime.now());
 
         return postMapper.toDto(postRepository.save(post));
@@ -81,5 +81,4 @@ public class PostServiceImpl implements PostService  {
                 .map(postMapper::toDto)
                 .collect(Collectors.toList());
     }
-
 }

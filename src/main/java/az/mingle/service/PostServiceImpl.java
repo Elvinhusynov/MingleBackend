@@ -10,10 +10,11 @@ import az.mingle.repository.PostRepository;
 import az.mingle.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -64,21 +65,17 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public List<PostResponse> getAllPosts() {
-        return postRepository.findAll()
-                .stream()
-                .map(postMapper::toDto)
-                .collect(Collectors.toList());
+    public Page<PostResponse> getAllPosts(Pageable pageable) {
+        return postRepository.findAll(pageable)
+                .map(postMapper::toDto);
     }
 
     @Override
-    public List<PostResponse> getUserPosts(Long userId) {
+    public Page<PostResponse> getUserPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
-        return postRepository.findByUser(user)
-                .stream()
-                .map(postMapper::toDto)
-                .collect(Collectors.toList());
+        return postRepository.findByUser(user, pageable)
+                .map(postMapper::toDto);
     }
 }

@@ -6,11 +6,13 @@ import az.mingle.dto.PostResponse;
 import az.mingle.service.PostService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -52,18 +54,21 @@ public class PostController {
     }
 
     @GetMapping
-    public ResponseEntity<BaseResponse<List<PostResponse>>> getAllPosts() {
-        List<PostResponse> posts = postService.getAllPosts();
-        return ResponseEntity.ok(
-                new BaseResponse<>(true, "All posts retrieved successfully", posts)
-        );
+    public ResponseEntity<Page<PostResponse>> getAllPosts(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return ResponseEntity.ok(postService.getAllPosts(pageable));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<BaseResponse<List<PostResponse>>> getUserPosts(@PathVariable Long userId) {
-        List<PostResponse> posts = postService.getUserPosts(userId);
-        return ResponseEntity.ok(
-                new BaseResponse<>(true, "User posts retrieved successfully", posts)
-        );
+    public ResponseEntity<Page<PostResponse>> getUserPosts(
+            @PathVariable Long userId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return ResponseEntity.ok(postService.getUserPosts(userId, pageable));
     }
 }

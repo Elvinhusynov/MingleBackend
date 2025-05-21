@@ -1,9 +1,9 @@
 package az.mingle.service;
 
 import az.mingle.dto.UserDto;
-import az.mingle.dto.UserRegisterRequest;
 import az.mingle.dto.UserUpdateRequest;
 import az.mingle.entity.User;
+import az.mingle.exception.AccessDeniedException;
 import az.mingle.exception.ResourceNotFoundException;
 import az.mingle.exception.UserNotFoundException;
 import az.mingle.mapper.UserMapper;
@@ -34,33 +34,17 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService , UserDetailsService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDto createUser(UserRegisterRequest request) {
-        User user = userMapper.toEntity(request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        User savedUser = userRepository.save(user);
-        return userMapper.toDto(savedUser);
-    }
-
-    @Override
     public UserDto getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException("User not found with id: " + id));
         return userMapper.toDto(user);
-    }
-
-    @Override
-    public List<UserDto> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        return users.stream()
-                .map(userMapper::toDto)
-                .collect(Collectors.toList());
     }
 
     @Override
@@ -93,12 +77,8 @@ public class UserServiceImpl implements UserService , UserDetailsService {
 
     @Override
     public UserDto getCurrentUser() {
-        String currentUsername = SecurityContextHolder.getContext().getAuthentication().getName();
-
-        User user = userRepository.findByUsername(currentUsername)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + currentUsername));
-
-        return userMapper.toPublicDto(user);
+        User authenticatedUser = getAuthenticatedUser();
+        return userMapper.toPublicDto(authenticatedUser);
     }
 
     @Override
@@ -134,7 +114,11 @@ public class UserServiceImpl implements UserService , UserDetailsService {
     }
 
     @Override
-    public User findById(Long id) {
+    public User getOwnUserById(Long id, String username) {
+        Long loggedInUserId = getUserIdByUsername(username);
+        if (!loggedInUserId.equals(id)) {
+            throw new AccessDeniedException("Yalnız öz məlumatınızı görə bilərsiniz.");
+        }
         return userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("İstifadəçi tapılmadı"));
     }

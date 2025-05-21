@@ -2,16 +2,16 @@ package az.mingle.controller;
 
 import az.mingle.dto.BaseResponse;
 import az.mingle.dto.UserDto;
-import az.mingle.dto.UserRegisterRequest;
 import az.mingle.dto.UserUpdateRequest;
 import az.mingle.entity.User;
 import az.mingle.exception.AccessDeniedException;
 import az.mingle.mapper.UserMapper;
 import az.mingle.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -28,29 +28,11 @@ public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
 
-    @PostMapping
-    public ResponseEntity<BaseResponse<UserDto>> createUser(@Valid @RequestBody UserRegisterRequest request) {
-        UserDto savedUser = userService.createUser(request);
-        return ResponseEntity.ok(new BaseResponse<>(true, "User created successfully", savedUser));
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<BaseResponse<UserDto>> getUserById(@PathVariable Long id,
                                                              Authentication authentication) {
-        Long loggedInUserId = userService.getUserIdByUsername(authentication.getName());
-        if (!loggedInUserId.equals(id)) {
-            throw new AccessDeniedException("Yalnız öz məlumatınızı görə bilərsiniz.");
-        }
-        User user = userService.findById(id);
-        return ResponseEntity.ok(new BaseResponse<>(true, "User retrieved successfully",
-                userMapper.toDto(user)));
-    }
-
-    @GetMapping
-    public ResponseEntity<BaseResponse<List<UserDto>>> getAllUsers() {
-        List<UserDto> users = userService.getAllUsers();
-        return ResponseEntity.ok(new BaseResponse<>(true, "All users retrieved successfully",
-                users));
+        User user = userService.getOwnUserById(id, authentication.getName());
+        return ResponseEntity.ok(new BaseResponse<>(true, "User retrieved successfully", userMapper.toDto(user)));
     }
 
     @PutMapping("/{id}")

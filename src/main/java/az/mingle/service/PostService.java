@@ -2,8 +2,8 @@ package az.mingle.service;
 
 import az.mingle.dto.PostRequest;
 import az.mingle.dto.PostResponse;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface PostService {
 
@@ -13,8 +13,8 @@ public interface PostService {
 
     void deletePost(Long postId, Long userId);
 
-    List<PostResponse> getAllPosts();
+    Page<PostResponse> getAllPosts(Pageable pageable);
 
-    List<PostResponse> getUserPosts(Long userId);
+    Page<PostResponse> getUserPosts(Long userId, Pageable pageable);
 }
 

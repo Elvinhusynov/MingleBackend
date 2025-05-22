@@ -5,7 +5,6 @@ import az.mingle.entity.User;
 import az.mingle.exception.UserAlreadyExistsException;
 import az.mingle.mapper.UserMapper;
 import az.mingle.repository.UserRepository;
-import az.mingle.util.JwtUtil;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -21,9 +20,9 @@ public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final UserMapper userMapper;
+    private final JwtService jwtService;
 
     @Override
     public AuthResponse register(UserRegisterRequest request) {
@@ -41,7 +40,7 @@ public class AuthServiceImpl implements AuthService {
 
         userRepository.save(user);
 
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user.getUsername());
 
         return new AuthResponse(token);
     }
@@ -56,7 +55,6 @@ public class AuthServiceImpl implements AuthService {
                 )
         );
 
-
         User user = userRepository.findByUsername(request.getUsername())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -64,8 +62,7 @@ public class AuthServiceImpl implements AuthService {
         user.setLastLogin(LocalDateTime.now());
         userRepository.save(user);
 
-
-        String token = jwtUtil.generateToken(user.getUsername());
+        String token = jwtService.generateToken(user.getUsername());
 
         return new AuthResponse(token);
     }

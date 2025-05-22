@@ -3,7 +3,9 @@ package az.mingle.service;
 import az.mingle.dto.UserDto;
 import az.mingle.entity.Follow;
 import az.mingle.entity.User;
+import az.mingle.exception.AlreadyFollowingException;
 import az.mingle.exception.NotFoundException;
+import az.mingle.exception.SelfFollowException;
 import az.mingle.mapper.UserMapper;
 import az.mingle.repository.FollowRepository;
 import lombok.RequiredArgsConstructor;
@@ -23,19 +25,19 @@ public class FollowServiceImpl implements FollowService {
     private final UserMapper userMapper;
 
     @Override
-    public void follow(Long followerId, Long followedId) {
-        if (followerId.equals(followedId)) {
-            throw new IllegalArgumentException("You cannot follow yourself");
-        }
-
-        User follower = userRepository.findById(followerId)
+    public void follow(String followerUsername, Long followedId) {
+        User follower = userRepository.findByUsername(followerUsername)
                 .orElseThrow(() -> new NotFoundException("Follower user not found"));
 
         User followed = userRepository.findById(followedId)
                 .orElseThrow(() -> new NotFoundException("Followed user not found"));
 
-        if (followRepository.findByFollowerIdAndFollowedId(followerId, followedId).isPresent()) {
-            throw new IllegalStateException("Already following this user");
+        if (follower.getUserId().equals(followed.getUserId())) {
+            throw new SelfFollowException("You cannot follow yourself");
+        }
+
+        if (followRepository.findByFollowerIdAndFollowedId(follower.getUserId(), followed.getUserId()).isPresent()) {
+            throw new AlreadyFollowingException("Already following this user");
         }
 
         Follow follow = new Follow();
@@ -47,8 +49,11 @@ public class FollowServiceImpl implements FollowService {
     }
 
     @Override
-    public void unfollow(Long followerId, Long followedId) {
-        Follow follow = followRepository.findByFollowerIdAndFollowedId(followerId, followedId)
+    public void unfollow(String followerUsername, Long followedId) {
+        User follower = userRepository.findByUsername(followerUsername)
+                .orElseThrow(() -> new NotFoundException("Follower user not found"));
+
+        Follow follow = followRepository.findByFollowerIdAndFollowedId(follower.getUserId(), followedId)
                 .orElseThrow(() -> new NotFoundException("Follow relationship not found"));
 
         followRepository.delete(follow);

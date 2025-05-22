@@ -4,7 +4,6 @@ import az.mingle.dto.UserDto;
 import az.mingle.dto.UserUpdateRequest;
 import az.mingle.entity.User;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.multipart.MultipartFile;
 

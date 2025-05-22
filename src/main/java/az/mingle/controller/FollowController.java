@@ -6,6 +6,8 @@ import az.mingle.service.FollowService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.List;
 
@@ -16,17 +18,17 @@ public class FollowController {
 
     private final FollowService followService;
 
-    @PostMapping("/{followerId}/follow/{followingId}")
-    public ResponseEntity<BaseResponse<Void>> follow(@PathVariable Long followerId,
+    @PostMapping("/follow/{followingId}")
+    public ResponseEntity<BaseResponse<Void>> follow(@AuthenticationPrincipal UserDetails userDetails,
                                                      @PathVariable Long followingId) {
-        followService.follow(followerId, followingId);
+        followService.follow(userDetails.getUsername(), followingId);
         return ResponseEntity.ok(new BaseResponse<>(true, "Followed successfully", null));
     }
 
-    @DeleteMapping("/{followerId}/unfollow/{followingId}")
-    public ResponseEntity<BaseResponse<Void>> unfollow(@PathVariable Long followerId,
+    @DeleteMapping("/unfollow/{followingId}")
+    public ResponseEntity<BaseResponse<Void>> unfollow(@AuthenticationPrincipal UserDetails userDetails,
                                                        @PathVariable Long followingId) {
-        followService.unfollow(followerId, followingId);
+        followService.unfollow(userDetails.getUsername(), followingId);
         return ResponseEntity.ok(new BaseResponse<>(true, "Unfollowed successfully", null));
     }
 

@@ -12,7 +12,11 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/posts")
@@ -70,5 +74,21 @@ public class PostController {
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return ResponseEntity.ok(postService.getUserPosts(userId, pageable));
+    }
+
+    @GetMapping("/feed")
+    public BaseResponse<List<PostResponse>> getFeed(@AuthenticationPrincipal UserDetails userDetails,
+                                @RequestParam(defaultValue = "0") int page,
+                                @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return postService.getFeedPosts(userDetails.getUsername(), pageable);
+    }
+
+    @GetMapping("/explore")
+    public BaseResponse<List<PostResponse>> getExplore(@AuthenticationPrincipal UserDetails userDetails,
+                                                       @RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "10") int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return postService.getExplorePosts(userDetails.getUsername(), pageable);
     }
 }

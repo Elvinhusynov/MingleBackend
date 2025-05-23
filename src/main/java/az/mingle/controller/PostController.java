@@ -28,9 +28,9 @@ public class PostController {
     @PostMapping
     public ResponseEntity<BaseResponse<PostResponse>> createPost(
             @RequestBody @Valid PostRequest postRequest,
-            @RequestParam Long userId) {
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        PostResponse createdPost = postService.createPost(postRequest, userId);
+        PostResponse createdPost = postService.createPost(postRequest, userDetails.getUsername());
         return new ResponseEntity<>(
                 new BaseResponse<>(true, "Post created successfully", createdPost),
                 HttpStatus.CREATED
@@ -41,17 +41,20 @@ public class PostController {
     public ResponseEntity<BaseResponse<PostResponse>> updatePost(
             @PathVariable Long id,
             @RequestBody @Valid PostRequest postRequest,
-            @RequestParam Long userId) {
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        PostResponse updatedPost = postService.updatePost(id, postRequest, userId);
+        PostResponse updatedPost = postService.updatePost(id, postRequest, userDetails.getUsername());
         return ResponseEntity.ok(
                 new BaseResponse<>(true, "Post updated successfully", updatedPost)
         );
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<BaseResponse<Void>> deletePost(@PathVariable Long id, @RequestParam Long userId) {
-        postService.deletePost(id, userId);
+    public ResponseEntity<BaseResponse<Void>> deletePost(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails) {
+
+        postService.deletePost(id, userDetails.getUsername());
         return ResponseEntity.ok(
                 new BaseResponse<>(true, "Post deleted successfully", null)
         );

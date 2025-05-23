@@ -30,8 +30,8 @@ public class PostServiceImpl implements PostService {
     private final PostMapper postMapper;
 
     @Override
-    public PostResponse createPost(PostRequest postRequest, Long userId) {
-        User user = userRepository.findById(userId)
+    public PostResponse createPost(PostRequest postRequest, String username) {
+        User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new NotFoundException("User not found"));
 
         Post post = postMapper.toEntity(postRequest);
@@ -42,27 +42,32 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
-    public PostResponse updatePost(Long postId, PostRequest postRequest, Long userId) {
+    public PostResponse updatePost(Long postId, PostRequest postRequest, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("Post not found"));
 
-        if (!post.getUser().getUserId().equals(userId)) {
+        if (!post.getUser().getUserId().equals(user.getUserId())) {
             throw new RuntimeException("You can only update your own posts");
         }
 
         postMapper.updatePostFromRequest(postRequest, post);
-
         post.setUpdatedAt(LocalDateTime.now());
 
         return postMapper.toDto(postRepository.save(post));
     }
 
     @Override
-    public void deletePost(Long postId, Long userId) {
+    public void deletePost(Long postId, String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new NotFoundException("Post not found"));
 
-        if (!post.getUser().getUserId().equals(userId)) {
+        if (!post.getUser().getUserId().equals(user.getUserId())) {
             throw new RuntimeException("You can only delete your own posts");
         }
 
@@ -95,7 +100,7 @@ public class PostServiceImpl implements PostService {
             return BaseResponse.success(List.of(), "No followed users found.");
         }
 
-        List<PostResponse> feedPosts = postRepository.findByUserIdIn(followedIds, pageable)
+        List<PostResponse> feedPosts = postRepository.findByUser_UserIdIn(followedIds, pageable)
                 .stream()
                 .map(postMapper::toDto)
                 .collect(Collectors.toList());
@@ -110,7 +115,7 @@ public class PostServiceImpl implements PostService {
 
         List<Long> followedIds = getFollowedUserIds(currentUser.getUserId());
 
-        List<PostResponse> explorePosts = postRepository.findByUserIdNotIn(followedIds, currentUser.getUserId(), pageable)
+        List<PostResponse> explorePosts = postRepository.findExplorePosts(followedIds, currentUser.getUserId(), pageable)
                 .stream()
                 .map(postMapper::toDto)
                 .collect(Collectors.toList());

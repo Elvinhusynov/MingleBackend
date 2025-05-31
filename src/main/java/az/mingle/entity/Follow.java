@@ -2,7 +2,6 @@ package az.mingle.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.Getter;
 
 import java.time.LocalDateTime;
 
@@ -15,7 +14,7 @@ public class Follow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long followId;
 
     // A user (follower)
     @ManyToOne
@@ -27,6 +26,11 @@ public class Follow {
     @JoinColumn(name = "followed_id", nullable = false)
     private User followed;
 
-    private LocalDateTime createdAt = LocalDateTime.now();
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
 }
 

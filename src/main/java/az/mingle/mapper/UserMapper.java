@@ -5,13 +5,12 @@ import az.mingle.dto.UserRegisterRequest;
 import az.mingle.entity.User;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.data.domain.Page;
 
 @Mapper(componentModel = "spring")
 public interface UserMapper {
 
     UserDto toDto(User user);
-
-    User toEntity(UserDto userDto);
 
     @Mapping(target = "userId", ignore = true)
     @Mapping(target = "bio", ignore = true)
@@ -39,7 +38,7 @@ public interface UserMapper {
         dto.setLastLogin(user.getLastLogin());
         return dto;
     }
+    default Page<UserDto> toDtoPage(Page<User> users) {
+        return users.map(this::toDto);
+    }
 }
-
-
-

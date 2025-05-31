@@ -60,9 +60,8 @@ public class UserController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        Page<User> users = userService.searchUsers(name, surname, username, page, size);
-        Page<UserDto> userDtos = users.map(userMapper::toDto);
-        return ResponseEntity.ok(new BaseResponse<>(true, "Users found", userDtos));
+        Page<UserDto> userDtos = userService.searchUsers(name, surname, username, page, size);
+        return ResponseEntity.ok(BaseResponse.success(userDtos, "İstifadəçilər tapıldı"));
     }
 
     @DeleteMapping("/{id}")

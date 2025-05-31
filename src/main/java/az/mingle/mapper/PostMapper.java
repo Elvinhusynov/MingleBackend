@@ -10,7 +10,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface PostMapper {
 
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "postId", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
@@ -20,8 +20,9 @@ public interface PostMapper {
     @Mapping(source = "user.username", target = "username")
     PostResponse toDto(Post post);
 
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "postId", ignore = true)
     @Mapping(target = "user", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     void updatePostFromRequest(PostRequest postRequest, @MappingTarget Post post);
+
 }

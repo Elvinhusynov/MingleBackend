@@ -12,4 +12,6 @@ public class PostResponse {
     private LocalDateTime createdAt;
     private Long userId;
     private String username;
+    private long likeCount;
+    private long dislikeCount;
 }

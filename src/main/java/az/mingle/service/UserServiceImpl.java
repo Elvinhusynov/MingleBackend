@@ -80,9 +80,10 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     }
 
     @Override
-    public Page<User> searchUsers(String name, String surname, String username, int page, int size) {
+    public Page<UserDto> searchUsers(String name, String surname, String username, int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        return userRepository.search(name, surname, username, pageable);
+        Page<User> users = userRepository.search(name, surname, username, pageable);
+        return userMapper.toDtoPage(users);
     }
 
     @Override

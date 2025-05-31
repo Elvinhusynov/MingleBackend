@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class FollowDto {
-    private Long id;
+    private Long followId;
 
     private Long followerId;
 

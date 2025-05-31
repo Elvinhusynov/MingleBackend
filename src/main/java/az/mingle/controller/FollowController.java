@@ -44,4 +44,3 @@ public class FollowController {
         return ResponseEntity.ok(new BaseResponse<>(true, "Following retrieved successfully", following));
     }
 }
-

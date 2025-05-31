@@ -21,4 +21,3 @@ public interface FollowMapper {
     })
     Follow toEntity(FollowDto followDto);
 }
-

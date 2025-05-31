@@ -21,7 +21,7 @@ public interface UserService extends UserDetailsService {
 
     void deleteUser(Long id);
 
-    Page<User> searchUsers(String name, String surname, String username, int page, int size);
+    Page<UserDto> searchUsers(String name, String surname, String username, int page, int size);
 
     User getAuthenticatedUser();
 
@@ -32,16 +32,4 @@ public interface UserService extends UserDetailsService {
     UserDto getCurrentUser();
 
     UserDto getUserById(Long id);
-
-
-
-
-
-
-
-
-
-
-
-
 }

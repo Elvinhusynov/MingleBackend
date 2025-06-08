@@ -28,6 +28,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
+        if (request.getServletPath().equals("/api/v1/auth/login") //->bunu yazaraq deyirikki tokensiz login ol
+            || request.getServletPath().equals("/api/v1/auth/register")//->bunu yazaraq deyirikki tokensiz sign-up ol
+            || request.getServletPath().startsWith("/swagger-ui")
+            || request.getServletPath().startsWith("/v3/api-docs")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
         final String username;
@@ -52,4 +60,3 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
-

@@ -4,5 +4,4 @@ public enum ReactionType {
 
     LIKE,
     DISLIKE
-
 }

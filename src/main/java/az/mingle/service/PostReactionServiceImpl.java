@@ -30,7 +30,7 @@ public class PostReactionServiceImpl implements PostReactionService {
         Post post = postRepository.findById(request.getPostId())
                 .orElseThrow(() -> new ResourceNotFoundException("Post not found"));
 
-        Optional<PostReaction> existing = reactionRepository.findByUserIdAndPostId(user.getUserId(), post.getPostId());
+        Optional<PostReaction> existing = reactionRepository.findByUserUserIdAndPostPostId(user.getUserId(), post.getPostId());
 
         if (existing.isPresent()) {
             PostReaction current = existing.get();

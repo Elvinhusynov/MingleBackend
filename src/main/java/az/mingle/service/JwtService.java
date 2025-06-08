@@ -57,9 +57,9 @@ public class JwtService {
                 .getBody();
     }
 
-    public String generateToken(String email) {
+    public String generateToken(String username) {
         return Jwts.builder()
-                .setSubject(email)
+                .setSubject(username)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationInMillis))
                 .signWith(getSignInKey(), SignatureAlgorithm.HS256)
